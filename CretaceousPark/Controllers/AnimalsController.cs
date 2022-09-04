@@ -21,10 +21,27 @@ namespace CretaceousPark.Controllers
 
     // GET api/animals
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Animal>>> Get()
+    public async Task<ActionResult<IEnumerable<Animal>>> Get(string species, string name, int minimumAge)
     {
-      return await _db.Animals.ToListAsync();
-    }
+      IQueryable<Animal> query = _db.Animals.AsQueryable();
+
+      if (species != null)
+      {
+        query = query.Where(entry => entry.Species == species);
+      }
+
+      if (name != null)
+      {
+        query = query.Where(entry => entry.Name == name);
+      }
+
+      if (minimumAge > 0)//because integers in C# are non-nullable data types, the default for an integer value parameter will be 0 when no minimumAge parameter is entered. So we can check minimumAge > 0 in our if statement.
+      {
+        query = query.Where(entry => entry.Age >= minimumAge);
+      }
+
+      return await query.ToListAsync();
+    }    
 
     // POST api/animals
     [HttpPost]
@@ -36,7 +53,7 @@ namespace CretaceousPark.Controllers
       return CreatedAtAction(nameof(GetAnimal), new { id = animal.AnimalId }, animal);
     }
 
-    // GET: api/Animals/5
+    // GET: api/Animals
     [HttpGet("{id}")]
     public async Task<ActionResult<Animal>> GetAnimal(int id)
     {
