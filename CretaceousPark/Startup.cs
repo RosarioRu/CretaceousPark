@@ -22,11 +22,9 @@ namespace CretaceousPark
         public void ConfigureServices(IServiceCollection services)
         {
 
+            services.AddDbContext<CretaceousParkContext>(opt =>
+              opt.UseMySql(Configuration["ConnectionStrings:DefaultConnection"], ServerVersion.AutoDetect(Configuration["ConnectionStrings:DefaultConnection"])));
             services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "CretaceousPark", Version = "v1" });
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -35,8 +33,6 @@ namespace CretaceousPark
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CretaceousPark v1"));
             }
 
             // app.UseHttpsRedirection(); //commenting this out will prevent server from rerrouting all traffic to the HTTPS port on our server. This will decrease app security but makes sure our browser can access site and prevent slow down during development. 
